@@ -1,0 +1,8 @@
+# Here, place the link to the minimum version of cloudify-plugins-common
+# that is acceptable by the plugin. This should be the value specified
+# in setup.py.
+cloudify-plugins-common==4.2
+testtools
+mock
+requests-mock
+PyYAML
