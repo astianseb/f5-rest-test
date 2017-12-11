@@ -54,7 +54,14 @@ node_templates:
             cloudify.interfaces.lifecycle:
                 start:
                     inputs:
-                        template_file: templates/baseline-networking-template.yaml
+                        template_file: templates/baseline-networking-START-template.yaml
+                        params:
+                          USERNAME: "admin"
+                          PASSWORD: "admin"
+                          TOKEN: { get_attribute: [token, token-content, token] }
+                stop:
+                    inputs:
+                        template_file: templates/baseline-networking-STOP-template.yaml
                         params:
                           USERNAME: "admin"
                           PASSWORD: "admin"
