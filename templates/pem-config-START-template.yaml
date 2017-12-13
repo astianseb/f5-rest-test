@@ -1,0 +1,78 @@
+rest_calls:
+  # provision global policy
+  - path: /mgmt/tm/pem/policy/
+    method: POST
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    payload:
+      name: "NSHPolicies"
+      status: "enabled"
+      transactional: "disabled"
+    response_format: json
+    recoverable_codes: [400]
+    response_translation: [policystate]
+    response_expectation:
+        - ['kind', "tm:pem:policy:policystate"]
+
+  # policy rule 1 (can  be sent once)
+  - path: /mgmt/tm/pem/policy/NSHPolicies/rules/
+    method: POST
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    payload:
+      name: "Chain1"
+      gateStatus: "disabled"
+      precedence: 1
+      tclFilter: "return [expr {[NSH::path_id] eq 1}]"
+      urlCategorizationFilters:
+        -
+          name: "url_category0"
+          operation: "match"
+          urlCategory: "/Common/Gambling"
+    response_format: json
+    recoverable_codes: [400]
+    response_translation: [chain1-rulesstate]
+    response_expectation:
+        - ['kind', "tm:pem:policy:rules:rulesstate"]
+
+  # policy rule 2 (can be sent once)
+  - path: /mgmt/tm/pem/policy/NSHPolicies/rules/
+    method: POST
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    payload:
+      name: "Chain2"
+      gateStatus: "disabled"
+      precedence: 2
+      tclFilter: "return [expr {[NSH::path_id] eq 2}]"
+      urlCategorizationFilters:
+        -
+          name: "url_category0"
+          operation: "match"
+          urlCategory: "/Common/Games"
+    response_format: json
+    recoverable_codes: [400]
+    response_translation: [chain2-rulesstate]
+    response_expectation:
+        - ['kind', "tm:pem:policy:rules:rulesstate"]
+
+  # provision PEM SPM profile
+  - path: /mgmt/tm/pem/profile/spm/
+    method: POST
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    payload:
+      name: "ParentalControl_PEM_pem_profile"
+      description: "PEM Listener ParentalControl_PEM"
+      fastPem: "disabled"
+      globalPoliciesHighPrecedence:
+        - "/Common/NSHPolicies"
+    response_format: json
+    recoverable_codes: [400]
+    response_translation: [spmstate]
+    response_expectation:
+        - ['kind', "tm:pem:profile:spm:spmstate"]

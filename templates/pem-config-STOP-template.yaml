@@ -1,0 +1,37 @@
+rest_calls:
+
+  # delete PEM SPM profile
+  - path: /mgmt/tm/pem/profile/spm/ParentalControl_PEM_pem_profile
+    method: DELETE
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    response_format: raw
+    recoverable_codes: [400]
+
+  # delete policy rule 2
+  - path: /mgmt/tm/pem/policy/NSHPolicies/rules/Chain2
+    method: DELETE
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    response_format: raw
+    recoverable_codes: [400]
+
+  # delete policy rule 1
+  - path: /mgmt/tm/pem/policy/NSHPolicies/rules/Chain1
+    method: DELETE
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    response_format: raw
+    recoverable_codes: [400]
+
+  # provision global policy
+  - path: /mgmt/tm/pem/policy/NSHPolicies
+    method: DELETE
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    response_format: raw
+    recoverable_codes: [400]

@@ -1,0 +1,14 @@
+rest_calls:
+  # enable PEM
+  - path: /mgmt/tm/sys/provision/pem
+    method: PUT
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    payload:
+        level: "nominal"
+    response_format: json
+    recoverable_codes: [400]
+    response_translation: [provisionstate]
+    response_expectation:
+        - ['kind', "tm:sys:provision:provisionstate"]
