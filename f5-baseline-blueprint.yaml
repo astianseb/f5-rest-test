@@ -5,12 +5,20 @@ imports:
 #  - https://raw.githubusercontent.com/Cloudify-PS/cloudify-rest-plugin/master/plugin.yaml
   - plugins/cloudify-rest-plugin/plugin.yaml
 
+inputs:
+  
+  mgmt_ip:
+    description: >
+      Management IP address
+    default: "10.239.1.112"
+
+
 node_templates:
 
   token:
     type: cloudify.rest.Requests
     properties:
-      hosts: ['10.239.1.112']
+      hosts: [{ get_input: mgmt_ip }]
       port: 443
       ssl: true
       verify: false
@@ -26,7 +34,7 @@ node_templates:
   baseline_config:
     type: cloudify.rest.Requests
     properties:
-      hosts: ['10.239.1.112']
+      hosts: [{ get_input: mgmt_ip }]
       port: 443
       ssl: true
       verify: false
@@ -46,7 +54,7 @@ node_templates:
   baseline_networking:
     type: cloudify.rest.Requests
     properties:
-      hosts: ['10.239.1.112']
+      hosts: [{ get_input: mgmt_ip }]
       port: 443
       ssl: true
       verify: false
