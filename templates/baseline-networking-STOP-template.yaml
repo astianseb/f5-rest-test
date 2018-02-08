@@ -1,5 +1,4 @@
 rest_calls:
-
   # DELETE self IP 192.168.20.53 on VLAN 1.1 - subscribers
   - path: /mgmt/tm/net/self/subscriberVlanIP
     method: DELETE
