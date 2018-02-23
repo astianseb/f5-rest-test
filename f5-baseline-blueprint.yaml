@@ -75,6 +75,12 @@ node_templates:
               TOKEN: { get_attribute: [license, token-content, token] }
         stop:
           inputs:
+            template_file: templates/get-token-bigiq-template.yaml
+            params:
+              USERNAME: "admin"
+              PASSWORD: "admin"
+        delete:
+          inputs:
             template_file: templates/revoke-license-template.yaml
             params:
               BIGIP_ADDRESS: {get_input: mgmt_ip}
