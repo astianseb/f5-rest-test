@@ -1,0 +1,18 @@
+rest_calls:
+  - path: /mgmt/cm/device/tasks/licensing/pool/member-management
+    method: POST
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    payload:
+      licensePoolName: "sg-key-pool"
+      command: "revoke"
+      address: "{{BIGIP_ADDRESS}}"
+      user: "{{USERNAME}}"
+      password: "{{PASSWORD}}"
+    response_format: json
+    recoverable_codes: [400]
+    response_translation:
+      id: [transaction-id]
+    response_expectation:
+        - ["status", "STARTED"]

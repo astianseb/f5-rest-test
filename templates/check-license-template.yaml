@@ -1,0 +1,11 @@
+rest_calls:
+  - path: /mgmt/cm/device/tasks/licensing/pool/member-management/{{TRANSACTION_ID}}
+    method: GET
+    headers:
+      X-F5-Auth-Token: "{{TOKEN}}"
+      Content-type: application/json
+    payload:
+    response_format: json
+    recoverable_codes: [400]
+    response_expectation:
+        - ["status", "FINISHED"]

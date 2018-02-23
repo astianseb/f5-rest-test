@@ -3,17 +3,85 @@ tosca_definitions_version: cloudify_dsl_1_3
 imports:
   - http://www.getcloudify.org/spec/cloudify/4.2/types.yaml
 #  - https://raw.githubusercontent.com/Cloudify-PS/cloudify-rest-plugin/master/plugin.yaml
-  - plugins/cloudify-rest-plugin/plugin.yaml
+#  - plugins/cloudify-rest-plugin/plugin.yaml
+  - https://github.com/cloudify-incubator/cloudify-utilities-plugin/releases/download/1.5.0/plugin.yaml
 
 inputs:
 
   mgmt_ip:
     description: >
-      Management IP address
+      bigIP Management IP address
     default: "192.168.30.208"
 
+  bigiq_mgmt_ip:
+    description: >
+      bigIQ Management IP address
+    default: "192.168.30.228"
 
 node_templates:
+
+
+  is_licensed:
+    type: cloudify.rest.Requests
+    properties:
+      hosts: [{ get_input: bigiq_mgmt_ip }]
+      port: 443
+      ssl: true
+      verify: false
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure:
+          inputs:
+            template_file: templates/get-token-bigiq-template.yaml
+            params:
+              USERNAME: "admin"
+              PASSWORD: "admin"
+        start:
+          inputs:
+            template_file: templates/check-license-template.yaml
+            params:
+              TRANSACTION_ID: {get_attribute: [license, transaction-id]}
+              BIGIP_ADDRESS: {get_input: mgmt_ip}
+              USERNAME: "admin"
+              PASSWORD: "admin"
+              TOKEN: { get_attribute: [license, token-content, token] }
+    relationships:
+      - type: cloudify.relationships.depends_on
+        target: license
+
+
+  license:
+    type: cloudify.rest.Requests
+    properties:
+      hosts: [{ get_input: bigiq_mgmt_ip }]
+      port: 443
+      ssl: true
+      verify: false
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure:
+          inputs:
+            template_file: templates/get-token-bigiq-template.yaml
+            params:
+              USERNAME: "admin"
+              PASSWORD: "admin"
+        start:
+          inputs:
+            template_file: templates/assign-license-template.yaml
+            params:
+              BIGIP_ADDRESS: {get_input: mgmt_ip}
+              USERNAME: "admin"
+              PASSWORD: "admin"
+              TOKEN: { get_attribute: [license, token-content, token] }
+        stop:
+          inputs:
+            template_file: templates/revoke-license-template.yaml
+            params:
+              BIGIP_ADDRESS: {get_input: mgmt_ip}
+              USERNAME: "admin"
+              PASSWORD: "admin"
+              TOKEN: { get_attribute: [license, token-content, token] }
+
 
 
   baseline_config:
@@ -38,6 +106,9 @@ node_templates:
               USERNAME: "admin"
               PASSWORD: "admin"
               TOKEN: { get_attribute: [baseline_config, token-content, token] }
+    relationships:
+      - type: cloudify.relationships.depends_on
+        target: is_licensed
 
 
   baseline_networking:

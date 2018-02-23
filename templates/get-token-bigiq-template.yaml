@@ -1,0 +1,14 @@
+rest_calls:
+  - path: /mgmt/shared/authn/login
+    method: POST
+    headers:
+      Content-type: application/json
+    payload:
+        username: "{{USERNAME}}"
+        password: "{{PASSWORD}}"
+    response_format: json
+    recoverable_codes: [400]
+    response_translation:
+        token: [token-content]
+    response_expectation:
+        - ['username', "admin"]
